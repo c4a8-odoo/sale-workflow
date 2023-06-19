@@ -4,12 +4,18 @@
 import json
 
 from odoo import api, models
+import json
+
+from odoo import api, models
 
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
+class SaleOrder(models.Model):
+    _inherit = "sale.order"
 
     @api.depends(
+        "order_line.tax_id", "order_line.price_unit", "amount_total", "amount_untaxed"
         "order_line.tax_id", "order_line.price_unit", "amount_total", "amount_untaxed"
     )
     def _compute_tax_totals_json(self):
@@ -26,6 +32,21 @@ class SaleOrder(models.Model):
                 partner=order.partner_shipping_id,
             )
 
+        account_move = self.env["account.move"]
+        for order in self:
+            tax_lines_data = (
+                account_move._prepare_tax_lines_data_for_totals_from_object(
+                    order.order_line, compute_taxes
+                )
+            )
+            tax_totals = account_move._get_tax_totals(
+                order.partner_id,
+                tax_lines_data,
+                order.amount_total,
+                order.amount_untaxed,
+                order.currency_id,
+            )
+            order.tax_totals_json = json.dumps(tax_totals)
         account_move = self.env["account.move"]
         for order in self:
             tax_lines_data = (
