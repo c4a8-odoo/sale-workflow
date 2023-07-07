@@ -78,25 +78,46 @@ class TestSaleFixedDiscount(TransactionCase):
         self.sale_line1.discount = 50.0
         self.assertEqual(self.sale.amount_total, 515.0)
         _logger.info("Taxes:" + self.sale.tax_totals_json)
+        self.assertEqual(
+            self.sale.tax_totals_json.groups_by_subtotal[
+                "Untaxed Amount"
+            ].tax_group_amount,
+            15.0,
+        )
+        self.assertEqual(
+            self.sale.tax_totals_json.groups_by_subtotal[
+                "Untaxed Amount"
+            ].tax_group_base_amount,
+            100.0,
+        )
 
-    # def test_03_discounts_fixed_and_(self):
-    #     """Tests multiple lines with mixed taxes and dicount types."""
-    #     self.sale_line2 = self.so_line.create(
-    #         {
-    #             "order_id": self.sale.id,
-    #             "name": "Line 2",
-    #             "price_unit": 500.0,
-    #             "product_uom_qty": 1,
-    #             "product_id": self.product.id,
-    #             "tax_id": [(5,)],
-    #         }
-    #     )
-    #     self.assertEqual(self.sale_line2.price_subtotal, 500.0)
-    #     # Add a fixed discount
-    #     self.sale_line2.discount_fixed = 100.0
-    #     self.assertEqual(self.sale_line2.price_subtotal, 400.0)
-    #     self.sale._amount_all()
-    #     self.assertEqual(self.sale.amount_total, 630.0)
-    #     self.sale_line1.discount = 50.0
-    #     self.assertEqual(self.sale.amount_total, 515.0)
-    #     self.assertEqual(self.sale.amount_total, 515.0)
+
+# {"amount_total": 515.0, "amount_untaxed": 500.0, "formatted_amount_total": "$\u00a0515.00",
+# "formatted_amount_untaxed": "$\u00a0500.00", "groups_by_subtotal":
+# {"Untaxed Amount": [{"tax_group_name": "Taxes", "tax_group_amount": 15.0,
+# "tax_group_base_amount": 100.0, "formatted_tax_group_amount": "$\u00a015.00",
+# "formatted_tax_group_base_amount": "$\u00a0100.00", "tax_group_id": 1,
+# "group_key": "Untaxed Amount-1"}]}, "subtotals": [{"name": "Untaxed Amount", "amount": 500.0,
+#  "formatted_amount": "$\u00a0500.00"}], "allow_tax_edition": false}
+
+# def test_03_discounts_fixed_and_(self):
+#     """Tests multiple lines with mixed taxes and dicount types."""
+#     self.sale_line2 = self.so_line.create(
+#         {
+#             "order_id": self.sale.id,
+#             "name": "Line 2",
+#             "price_unit": 500.0,
+#             "product_uom_qty": 1,
+#             "product_id": self.product.id,
+#             "tax_id": [(5,)],
+#         }
+#     )
+#     self.assertEqual(self.sale_line2.price_subtotal, 500.0)
+#     # Add a fixed discount
+#     self.sale_line2.discount_fixed = 100.0
+#     self.assertEqual(self.sale_line2.price_subtotal, 400.0)
+#     self.sale._amount_all()
+#     self.assertEqual(self.sale.amount_total, 630.0)
+#     self.sale_line1.discount = 50.0
+#     self.assertEqual(self.sale.amount_total, 515.0)
+#     self.assertEqual(self.sale.amount_total, 515.0)
