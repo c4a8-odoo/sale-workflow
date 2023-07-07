@@ -1,8 +1,12 @@
 # Copyright 2017-18 ForgeFlow S.L.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import logging
+
 from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase
+
+_logger = logging.getLogger(__name__)
 
 
 class TestSaleFixedDiscount(TransactionCase):
@@ -58,6 +62,7 @@ class TestSaleFixedDiscount(TransactionCase):
                 "order_id": self.sale.id,
                 "name": "Line 2",
                 "price_unit": 500.0,
+                #            "discount": 10.0,
                 "product_uom_qty": 1,
                 "product_id": self.product.id,
                 "tax_id": [(5,)],
@@ -67,7 +72,31 @@ class TestSaleFixedDiscount(TransactionCase):
         # Add a fixed discount
         self.sale_line2.discount_fixed = 100.0
         self.assertEqual(self.sale_line2.price_subtotal, 400.0)
+        #     self.assertEqual(self.sale_line2.discount, 0.0)
         self.sale._amount_all()
         self.assertEqual(self.sale.amount_total, 630.0)
         self.sale_line1.discount = 50.0
         self.assertEqual(self.sale.amount_total, 515.0)
+        _logger.info("Taxes:" + self.sale.tax_totals_json)
+
+    # def test_03_discounts_fixed_and_(self):
+    #     """Tests multiple lines with mixed taxes and dicount types."""
+    #     self.sale_line2 = self.so_line.create(
+    #         {
+    #             "order_id": self.sale.id,
+    #             "name": "Line 2",
+    #             "price_unit": 500.0,
+    #             "product_uom_qty": 1,
+    #             "product_id": self.product.id,
+    #             "tax_id": [(5,)],
+    #         }
+    #     )
+    #     self.assertEqual(self.sale_line2.price_subtotal, 500.0)
+    #     # Add a fixed discount
+    #     self.sale_line2.discount_fixed = 100.0
+    #     self.assertEqual(self.sale_line2.price_subtotal, 400.0)
+    #     self.sale._amount_all()
+    #     self.assertEqual(self.sale.amount_total, 630.0)
+    #     self.sale_line1.discount = 50.0
+    #     self.assertEqual(self.sale.amount_total, 515.0)
+    #     self.assertEqual(self.sale.amount_total, 515.0)
