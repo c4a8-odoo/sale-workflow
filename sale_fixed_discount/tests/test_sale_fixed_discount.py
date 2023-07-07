@@ -1,6 +1,7 @@
 # Copyright 2017-18 ForgeFlow S.L.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import json
 import logging
 
 from odoo.exceptions import ValidationError
@@ -78,10 +79,9 @@ class TestSaleFixedDiscount(TransactionCase):
         self.sale_line1.discount = 50.0
         self.assertEqual(self.sale.amount_total, 515.0)
         _logger.info("Taxes:" + self.sale.tax_totals_json)
+        tax = json.load(self.sale.tax_totals_json)
         self.assertEqual(
-            self.sale.tax_totals_json.groups_by_subtotal[
-                "Untaxed Amount"
-            ].tax_group_amount,
+            tax.groups_by_subtotal["Untaxed Amount"].tax_group_amount,
             15.0,
         )
         self.assertEqual(
