@@ -79,15 +79,13 @@ class TestSaleFixedDiscount(TransactionCase):
         self.sale_line1.discount = 50.0
         self.assertEqual(self.sale.amount_total, 515.0)
         _logger.info("Taxes:" + self.sale.tax_totals_json)
-        tax = json.load(self.sale.tax_totals_json)
+        tax = json.loads(self.sale.tax_totals_json)
         self.assertEqual(
             tax.groups_by_subtotal["Untaxed Amount"].tax_group_amount,
             15.0,
         )
         self.assertEqual(
-            self.sale.tax_totals_json.groups_by_subtotal[
-                "Untaxed Amount"
-            ].tax_group_base_amount,
+            tax.groups_by_subtotal["Untaxed Amount"].tax_group_base_amount,
             100.0,
         )
 
