@@ -60,10 +60,10 @@ class SaleOrderLine(models.Model):
         store=True,
     )
 
-    @api.model
-    def create(self, values):
-        line = super(SaleOrderLine, self).create(values)
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super(SaleOrderLine, self).create(vals_list)
         # We do not reset the sequence if we are copying a complete sale order
         if self.env.context.get("keep_line_sequence"):
-            line.order_id._reset_sequence()
-        return line
+            lines.order_id._reset_sequence()
+        return lines
